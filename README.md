@@ -43,6 +43,13 @@ The bonnet is a Pi HAT, but it is just an I2C device. Male-to-male jumpers from 
 The ESP32's internal pull-ups are the only I2C pull-ups on that bus, so the rover runs I2C at 100 kHz.
 If a wheel runs backwards, flip its sign in `config.h`. If the whole thing is mirrored, swap M1/M2.
 
+#### Rover on the Waveshare ESP32-S3-LCD-1.47 instead
+
+Same bonnet wiring, but SDA goes to **GPIO4** and SCL to **GPIO5** (GPIO21 is the TF card on that board,
+38 to 48 are the LCD and RGB LED). Use the `*_s3` environments. Power that board from a USB power bank over
+its USB-C port, not from the AA pack: its regulator is rated too close to 6 V. The AA pack still feeds the
+bonnet's motor terminal, and the GND jumper ties the two together.
+
 ## Layout
 
 ```
@@ -74,6 +81,9 @@ src/stages/01..05          bring-up tests (see below)
 .\flash.ps1 controller                      wearable firmware
 .\flash.ps1 rover -Port COMx                rover firmware (runs without the bonnet for link tests)
 ```
+
+For the Waveshare S3 board use `stage4_espnow_link_s3`, `stage5_bonnet_test_s3` and `rover_s3`. It enumerates
+as "USB Serial Device" (native USB), COM6 on the bench PC.
 
 Add `-Monitor` to any line to open the serial monitor afterwards (Ctrl+C to exit), or run `pio device monitor --port COMx`.
 
