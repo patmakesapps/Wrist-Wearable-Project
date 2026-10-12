@@ -1,6 +1,7 @@
 // Stage 5: prove the motor bonnet wiring (rover ESP32 only).
 // Scans I2C (expect 0x60, plus 0x70 which is the PCA9685 all-call address), initialises
-// the bonnet, then runs M1 and M2 forward/reverse and a ramp, printing each step.
+// the bonnet, then runs the left and right motors (MOTOR_LEFT / MOTOR_RIGHT in config.h)
+// forward/reverse and a ramp, printing each step.
 #include <Arduino.h>
 #include <Wire.h>
 #include "config.h"
@@ -44,16 +45,18 @@ void loop() {
         delay(3000);
         return;
     }
-    for (uint8_t m = 1; m <= 2; ++m) {
-        Serial.printf("M%u forward 60%%\n", m);  bonnet.setMotor(m, 60);  delay(1000);
-        Serial.printf("M%u stop\n", m);           bonnet.setMotor(m, 0);   delay(500);
-        Serial.printf("M%u reverse 60%%\n", m);  bonnet.setMotor(m, -60); delay(1000);
-        Serial.printf("M%u stop\n", m);           bonnet.setMotor(m, 0);   delay(500);
+    static const struct { const char *side; uint8_t m; } motors[] = {
+        {"left", MOTOR_LEFT}, {"right", MOTOR_RIGHT}};
+    for (const auto &mo : motors) {
+        Serial.printf("%s (M%u) forward 60%%\n", mo.side, mo.m);  bonnet.setMotor(mo.m, 60);  delay(1000);
+        Serial.printf("%s (M%u) stop\n", mo.side, mo.m);           bonnet.setMotor(mo.m, 0);   delay(500);
+        Serial.printf("%s (M%u) reverse 60%%\n", mo.side, mo.m);  bonnet.setMotor(mo.m, -60); delay(1000);
+        Serial.printf("%s (M%u) stop\n", mo.side, mo.m);           bonnet.setMotor(mo.m, 0);   delay(500);
     }
     Serial.println("both forward, ramp 30 -> 100 %");
     for (int p = 30; p <= 100; p += 10) {
-        bonnet.setMotor(1, p);
-        bonnet.setMotor(2, p);
+        bonnet.setMotor(MOTOR_LEFT, p);
+        bonnet.setMotor(MOTOR_RIGHT, p);
         delay(250);
     }
     bonnet.stopAll();

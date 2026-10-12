@@ -38,10 +38,12 @@ The bonnet is a Pi HAT, but it is just an I2C device. Male-to-male jumpers from 
 | GND | header pin 6 | GND |
 | Motor power + / - | screw terminal | bench: ESP32 VIN / GND. Mobile: 4xAA pack or a USB power bank feeding the ESP32, then VIN -> terminal |
 | Left motor | M1 terminals | |
-| Right motor | M2 terminals | |
+| Right motor | M4 terminals | |
+
+Which of a motor's two wires goes in which hole doesn't matter: if a wheel runs backwards, flip its sign in `config.h`.
 
 The ESP32's internal pull-ups are the only I2C pull-ups on that bus, so the rover runs I2C at 100 kHz.
-If a wheel runs backwards, flip its sign in `config.h`. If the whole thing is mirrored, swap M1/M2.
+If the whole thing drives mirrored, swap the `MOTOR_LEFT` / `MOTOR_RIGHT` terminal numbers.
 
 #### Rover on the Waveshare ESP32-S3-LCD-1.47 instead
 
@@ -77,7 +79,7 @@ src/stages/01..05          bring-up tests (see below)
 .\flash.ps1 stage4_espnow_link              BOTH boards (second one with -Port COMx): each prints
                                             its MAC and the other's heartbeats with RSSI
 .\flash.ps1 stage5_bonnet_test -Port COMx   rover: I2C scan shows 0x60 (+0x70 all-call), then
-                                            M1/M2 forward, reverse, ramp
+                                            left (M1) and right (M4) forward, reverse, ramp
 .\flash.ps1 controller                      wearable firmware
 .\flash.ps1 rover -Port COMx                rover firmware (runs without the bonnet for link tests)
 ```
