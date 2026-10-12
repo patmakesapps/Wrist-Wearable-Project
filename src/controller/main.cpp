@@ -23,8 +23,9 @@ static bool  tiltInit = false;
 
 // arming
 static bool     armed = false;
-static bool     wasLevel = false;
-static uint32_t levelSince = 0;
+static bool     holding = false;            // inside a hold-still attempt
+static float    holdPitch = 0, holdRoll = 0; // pose at the start of the hold
+static uint32_t holdSince = 0;
 static uint32_t disarmedAt = 0;
 
 // link
@@ -42,7 +43,7 @@ static int8_t throttle = 0, steer = 0;
 static void printHelp() {
     Serial.println("Commands: a=arm  d=disarm  z=zero tilt (hold neutral)  s=toggle status stream");
     Serial.println("          b=buzz  c=recalibrate gyro (hold still)  ?=help");
-    Serial.println("Gestures: hold level 1 s = arm   sharp shake = disarm (e-stop)");
+    Serial.println("Gestures: hold still 1 s = arm (that pose becomes neutral)   sharp shake = disarm (e-stop)");
 }
 
 static int8_t tiltToAxis(float deg) {
@@ -72,7 +73,7 @@ static void setArmed(bool on, const char *why) {
     haptics.play(on ? Patterns::TAP : Patterns::DOUBLE_TAP);
     if (!on) {
         disarmedAt = millis();
-        wasLevel = false;
+        holding = false;
         sendControl(CTRL_ESTOP);            // tell the rover right now, don't wait for the next tick
     }
 }
@@ -187,12 +188,23 @@ void loop() {
 
             if (armed && accelDev > ESTOP_SHAKE_G) setArmed(false, "shake");
 
-            const bool level = fabsf(p) < LEVEL_TOLERANCE_DEG && fabsf(r) < LEVEL_TOLERANCE_DEG && accelDev < 0.1f;
+            // Arm by holding still in any pose; that pose becomes the neutral (zero) tilt.
             if (!armed && now - disarmedAt > ARM_LOCKOUT_MS) {
-                if (level && !wasLevel) levelSince = now;
-                if (level && wasLevel && now - levelSince >= ARM_HOLD_MS) setArmed(true, "held level");
+                const bool stillHere = holding && accelDev < 0.1f &&
+                                       fabsf(pitchF - holdPitch) < STILL_TOLERANCE_DEG &&
+                                       fabsf(rollF - holdRoll) < STILL_TOLERANCE_DEG;
+                if (!stillHere) {                       // start (or restart) a hold at this pose
+                    holding = true;
+                    holdPitch = pitchF;
+                    holdRoll = rollF;
+                    holdSince = now;
+                } else if (now - holdSince >= ARM_HOLD_MS) {
+                    pitchZero = pitchF;
+                    rollZero = rollF;
+                    holding = false;
+                    setArmed(true, "held still; pose zeroed");
+                }
             }
-            wasLevel = level;
         }
     }
 

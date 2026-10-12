@@ -111,13 +111,14 @@ Stages 1 to 3 were verified on the bench on 2026-10-12. Stages 4 and 5 need the 
 ## Driving
 
 1. Power both. The controller double-taps on boot; its status line shows `rover none` until the rover answers.
-2. Hold your hand level and still for 1 s. Single tap = **armed**.
+2. Hold your hand still, in whatever pose you want to mean "stop", for 1 s. Single tap = **armed**, and that
+   pose is now neutral. No need for the sensor to be level.
 3. Tilt forward/back for throttle, roll left/right to steer. Dead zone 8 degrees, full speed at 35.
-4. **Sharp shake = e-stop.** Double tap, rover halts immediately, re-arm possible after 1.5 s.
+4. **Sharp shake = e-stop.** Double tap, rover halts immediately, re-arm possible after 1.5 s by holding still again.
 5. If the rover stops answering while armed, the controller gives a long buzz every 2 s. The rover also stops
    itself after 300 ms without commands, so a dead controller never leaves it driving.
 
-If you wear the sensor at an angle, hold your natural neutral position and press `z` in the monitor to zero it.
+`z` in the monitor re-zeros without re-arming, if you ever want that.
 
 Controller serial keys: `a` arm, `d` disarm, `z` zero tilt, `s` status stream, `b` buzz, `c` gyro recal, `?` help.
 

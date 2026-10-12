@@ -36,9 +36,9 @@ constexpr float    ROLL_SIGN           = 1.0f;  // flip to -1 if left/right is r
 constexpr float    TILT_FILTER_ALPHA   = 0.2f;  // EMA on tilt, per 10 ms sample
 constexpr uint32_t CONTROL_PERIOD_MS   = 50;    // 20 Hz command rate
 
-// Arming
-constexpr float    LEVEL_TOLERANCE_DEG = 8.0f;  // "level" = both axes inside this
-constexpr uint32_t ARM_HOLD_MS         = 1000;  // hold level this long to arm
+// Arming: hold still in ANY pose for ARM_HOLD_MS; that pose becomes neutral (zero tilt).
+constexpr float    STILL_TOLERANCE_DEG = 3.0f;  // tilt may wander this much during the hold
+constexpr uint32_t ARM_HOLD_MS         = 1000;  // hold still this long to arm
 constexpr uint32_t ARM_LOCKOUT_MS      = 1500;  // no re-arm this soon after a disarm
 constexpr float    ESTOP_SHAKE_G       = 1.5f;  // accel deviation that disarms (sharp shake)
 constexpr uint32_t LINK_TIMEOUT_MS     = 600;   // no telemetry for this long = link lost
