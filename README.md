@@ -146,18 +146,16 @@ Assembly: brackets and motors onto the plate, wheels on, caster into the nose po
 bonnet and ESP32 on the deck. Motor leads drop through the notch at the rear of the deck; battery leads come up
 through the slot at the front of the deck.
 
-## Hood and guns (3D print, cosmetic)
+## Hood (3D print, cosmetic)
 
 | Part | Size | Orientation | Supports |
 |---|---|---|---|
 | `droid_hood_v1.stl` | 86 x 94 x 50 mm | exported flat top down, print as-is | none |
-| `droid_gun_L_v1.stl`, `droid_gun_R_v1.stl` | 12 x 54 x 12 mm | exported glue pad down, print as-is | none |
 
 The hood drops over the deck with no screws: internal rests sit on the deck top, the rear wall locates against the
 deck's rear edge and two stops catch its front edge. Wheel arches clear the tires, the front below the deck line is
 open so the nose and the AA switch stay reachable, and a port on the left side lines up with the ESP32's USB-C. Two
-eye recesses on the face slope are there for paint. The guns glue to the hood sides above the arches, pad flat
-against the wall, barrels forward.
+eye recesses on the face slope are there for paint.
 
 ## Hand controller (3D print)
 
