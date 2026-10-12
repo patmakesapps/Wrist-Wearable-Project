@@ -64,16 +64,41 @@ static void handleCommands(uint32_t now) {
     memcpy(&p, buf, sizeof p);
     if (p.magic != CONTROL_MAGIC) return;
 
-    if (!haveCtrl || memcmp(mac, ctrlMac, 6) != 0) {
+    if (!haveCtrl) {
         memcpy(ctrlMac, mac, 6);
         haveCtrl = true;
         char ms[18];
         Link::macToString(mac, ms);
-        Serial.printf("controller found: %s\n", ms);
+        Serial.printf("controller found: %s (locked until reboot)\n", ms);
+    } else if (memcmp(mac, ctrlMac, 6) != 0) {
+        return;                                  // only obey the first controller heard
     }
     lastCmd = p;
     lastCmdAt = now;
     if (cmdTimeout) { cmdTimeout = false; Serial.println("commands flowing"); }
+}
+
+// Bench keys over USB: f=both forward, b=both back, l=left only, r=right only, x=stop.
+// Each runs for 1.5 s at 50 % and overrides the radio while active.
+static uint32_t manualUntil = 0;
+static int manualL = 0, manualR = 0;
+
+static void handleSerial(uint32_t now) {
+    while (Serial.available()) {
+        int l = 0, r = 0;
+        switch ((char)Serial.read()) {
+            case 'f': l = r = 30;  break;
+            case 'b': l = r = -30; break;
+            case 'l': l = 30;      break;
+            case 'r': r = 30;      break;
+            case 'x':              break;
+            default:  continue;
+        }
+        manualL = l;
+        manualR = r;
+        manualUntil = (l || r) ? now + 3000 : 0;
+        Serial.printf("manual: L%+d R%+d%s\n", l, r, (l || r) ? " for 3 s" : " (stop)");
+    }
 }
 
 static void sendTelemetry() {
@@ -110,6 +135,7 @@ void loop() {
     const uint32_t now = millis();
 
     handleCommands(now);
+    handleSerial(now);
 
     if (now - lastTick < ROVER_TICK_MS) return;
     lastTick = now;
@@ -123,6 +149,11 @@ void loop() {
     const bool drive = !cmdTimeout && !estop && (lastCmd.flags & CTRL_ARMED);
     if (drive) mix(lastCmd.throttle, lastCmd.steer, targetL, targetR);
     else       targetL = targetR = 0;
+
+    if (manualUntil) {
+        if (now < manualUntil) { targetL = manualL; targetR = manualR; }
+        else                   { manualUntil = 0; }
+    }
 
     if (estop) { curL = curR = 0; }                 // immediate, no slew
     else       { curL = slew(curL, targetL); curR = slew(curR, targetR); }

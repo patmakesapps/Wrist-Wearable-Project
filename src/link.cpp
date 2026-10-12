@@ -31,6 +31,9 @@ void onReceive(const esp_now_recv_info_t *info, const uint8_t *data, int len) {
 bool Link::begin() {
     WiFi.mode(WIFI_STA);
     WiFi.setSleep(false);              // modem sleep adds tens of ms of receive latency
+    // Lower TX power: the default 19.5 dBm pulls a ~350 mA burst that browns out a weak
+    // battery feed. 11 dBm is plenty for two boards in the same room.
+    WiFi.setTxPower(WIFI_POWER_11dBm);
     if (esp_now_init() != ESP_OK) return false;
     if (esp_now_register_recv_cb(onReceive) != ESP_OK) return false;
     return ensurePeer(BROADCAST);

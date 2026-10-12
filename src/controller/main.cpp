@@ -105,12 +105,14 @@ static void handleTelemetry(uint32_t now) {
     memcpy(&t, buf, sizeof t);
     if (t.magic != TELEMETRY_MAGIC) return;
 
-    if (!haveRover || memcmp(mac, roverMac, 6) != 0) {
+    if (!haveRover) {
         memcpy(roverMac, mac, 6);
         haveRover = true;
         char ms[18];
         Link::macToString(mac, ms);
-        Serial.printf("rover found: %s\n", ms);
+        Serial.printf("rover found: %s (locked until reboot)\n", ms);
+    } else if (memcmp(mac, roverMac, 6) != 0) {
+        return;                                  // a second rover on the air: ignore it
     }
     lastTelemetryAt = now;
     lastTlm = t;
