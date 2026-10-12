@@ -48,9 +48,23 @@ If the whole thing drives mirrored, swap the `MOTOR_LEFT` / `MOTOR_RIGHT` termin
 #### Rover on the Waveshare ESP32-S3-LCD-1.47 instead
 
 Same bonnet wiring, but SDA goes to **GPIO4** and SCL to **GPIO5** (GPIO21 is the TF card on that board,
-38 to 48 are the LCD and RGB LED). Use the `*_s3` environments. Power that board from a USB power bank over
-its USB-C port, not from the AA pack: its regulator is rated too close to 6 V. The AA pack still feeds the
-bonnet's motor terminal, and the GND jumper ties the two together.
+38 to 48 are the LCD and RGB LED). Use the `*_s3` environments.
+
+The board is a USB-A stick. With the USB plug pointing up and the screen facing you, the left column of
+pins reads, top to bottom: `5V, GND, 3V3, 1, 2, 3, 4, 5, 6`. The right column: `TX, RX, 13, 12, 11, 10, 9, 8, 7`.
+Pinout: https://www.waveshare.com/wiki/ESP32-S3-LCD-1.47
+
+| S3 board pin | Bonnet header pin |
+|---|---|
+| 3V3 (3rd from top, left) | 1 (3V3) |
+| 4 (7th from top, left) | 3 (SDA) |
+| 5 (8th from top, left) | 5 (SCL) |
+| GND (2nd from top, left) | 6 (GND) |
+
+Power the S3 board through its USB plug only: the PC while testing, a USB power bank in the hull later
+(it plugs straight into the bank's USB-A socket). Do not feed the AA pack into its 5V pin: that pin is the USB
+line itself. The AA pack feeds the bonnet's motor terminal, and the GND jumper above already ties the
+battery, bonnet and board to one ground, so no separate wire from the battery terminal to the board is needed.
 
 ## Layout
 
@@ -86,6 +100,9 @@ src/stages/01..05          bring-up tests (see below)
 
 For the Waveshare S3 board use `stage4_espnow_link_s3`, `stage5_bonnet_test_s3` and `rover_s3`. It enumerates
 as "USB Serial Device" (native USB), COM6 on the bench PC.
+
+Verified 2026-10-12: controller on COM3 and `rover_s3` on COM6 find each other over ESP-NOW within a second of
+boot, and the rover's 300 ms command-timeout stop works when the controller drops out.
 
 Add `-Monitor` to any line to open the serial monitor afterwards (Ctrl+C to exit), or run `pio device monitor --port COMx`.
 
