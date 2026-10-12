@@ -146,6 +146,25 @@ Assembly: brackets and motors onto the plate, wheels on, caster into the nose po
 bonnet and ESP32 on the deck. Motor leads drop through the notch at the rear of the deck; battery leads come up
 through the slot at the front of the deck.
 
+## Hand controller (3D print)
+
+Same Blender file, parts in `cad/stl/`:
+
+| Part | Size | Orientation | Supports |
+|---|---|---|---|
+| `controller_base_v1.stl` | 96 x 62 x 24 mm | open side up | none |
+| `controller_lid_v1.stl` | 96 x 62 x 4 mm | flat outer face down | none |
+
+Inside the base: the ESP32 DevKit sits on four 15 mm pillars with L stops, component side up, USB-C toward the
+end wall with the cable slot. The 15 mm leaves room for the dupont jumpers plugged onto the downward header pins.
+The GY-521 lies flat in a 21 x 16 mm locating frame, long axis along the controller, and the vibration module in a
+24 x 20 mm frame beside it where the palm sits. Both frames are open on the wire side and have zip-tie slots either
+side; double-sided tape also works. Two 4 x 40 mm slots through the floor take a hand strap. The lid has a locating
+rim and screws into the four corner bosses with M2.5x8 self-tappers. ESP32 is held by two zip ties over the board.
+
+Assumed footprints, measure yours if they differ: DevKit 52 x 28.5 mm, GY-521 21 x 16 mm, vibration module
+24 x 20 mm.
+
 ## Tuning
 
 Everything lives in `include/config.h`:
