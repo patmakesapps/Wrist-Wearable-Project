@@ -122,6 +122,30 @@ Stages 1 to 3 were verified on the bench on 2026-10-12. Stages 4 and 5 need the 
 
 Controller serial keys: `a` arm, `d` disarm, `z` zero tilt, `s` status stream, `b` buzz, `c` gyro recal, `?` help.
 
+## Droid chassis (3D print)
+
+Blender source: `cad/Wrist controlled Droid.blend` (hardware fit models appended from the Lumalien MASTER HARDWARE
+library). Printable parts in `cad/stl/`:
+
+| Part | Size | Orientation | Supports |
+|---|---|---|---|
+| `droid_chassis_v1.stl` | 79 x 106 x 41.5 mm | flat bottom down | none, except optionally inside the caster pocket under the nose (32 mm bridge) |
+| `droid_deck_v1.stl` | 80 x 76 x 13.5 mm | flat side down, pillars up | none |
+
+Layout, rear to front: the two N20s sit on the plate in their bridge brackets with the shafts out through windows in
+the side walls (43 mm wheels put the axle at 21.5 mm, so the plate top is at 16.5 mm). The 4xAA case drops in over
+the motors, switch end forward. The deck screws onto the wall flanges and carries the motor bonnet at the rear,
+terminals facing back, and the ESP32 on four 9 mm pillars so its header pins hang free. The Marrteum ball caster
+sits in the pocket under the nose, flat base against the pocket ceiling, ball out the bottom.
+
+Screws, all self-tapping into plastic: 4 x M3x6 (brackets), 2 x M2.5x6 (caster, 22 mm apart), 4 x M2.5x6 (deck to
+flanges), 4 x M2.5x6 (bonnet to standoffs, 58 x 23 mm pattern), 2 zip ties (ESP32 over the pillars, through the deck
+slots).
+
+Assembly: brackets and motors onto the plate, wheels on, caster into the nose pocket, AA case in, deck on, then the
+bonnet and ESP32 on the deck. Motor leads drop through the notch at the rear of the deck; battery leads come up
+through the slot at the front of the deck.
+
 ## Tuning
 
 Everything lives in `include/config.h`:
